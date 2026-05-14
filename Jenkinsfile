@@ -1,34 +1,75 @@
 pipeline {
 
-	agent any
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+        }
+    }
 
-	
-	tools {
-  maven 'm360'
-}
-	
-	parameters {
-  string defaultValue: 'adi', name: 'name', trim: true
-}
-	stages {
-	  stage('build') {
-		steps {
-		  sh 'mvn install -DskipTests'
-		}
-	  }
+    stages {
 
-	  stage('test') {
-		  steps {
-				sh 'echo new'
-			}
-		 post {
-			 always{
-				archiveArtifacts artifacts: 'target/**.jar', followSymlinks: false
-			
-			 }
-			}
-	  }
-		
-}
+        stage('Clone Code') {
 
+            steps {
+
+                git branch: 'master',
+                url: 'https://github.com/khwazabani/demo1.git'
+            }
+        }
+
+        stage('Build Application') {
+
+            steps {
+
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('List Artifact') {
+
+            steps {
+
+                sh 'pwd'
+                sh 'ls -lh target'
+                sh 'find target -name "*.jar"'
+            }
+        }
+
+        stage('Upload Artifact to JFrog') {
+
+            steps {
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'jfrog-jenkins-cred',
+                    usernameVariable: 'JF_USER',
+                    passwordVariable: 'JF_PASS'
+                )]) {
+
+                    sh '''
+                    curl -u $JF_USER:$JF_PASS \
+                    -T target/*.jar \
+                    "http://20.204.145.235:8082/artifactory/maven-local/demo-app.jar"
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+
+        success {
+
+            echo 'Artifact uploaded successfully to JFrog'
+        }
+
+        failure {
+
+            echo 'Pipeline failed'
+        }
+
+        always {
+
+            cleanWs()
+        }
+    }
 }
