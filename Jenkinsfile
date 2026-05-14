@@ -54,23 +54,21 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+     stage('Build Docker Image') {
+
+    agent any
+
     steps {
-        sh 'docker version'
+
+        sh 'docker --version'
+
         sh '''
         docker build -t springboot-app:${BUILD_NUMBER} .
         '''
+
         sh 'docker images'
     }
-        }
-    }
-    post {
+}
 
         success {
 
