@@ -53,7 +53,6 @@ pipeline {
                 }
             }
         }
-    }
 
         stage('Build Docker Image') {
     agent {
@@ -69,7 +68,8 @@ pipeline {
         '''
         sh 'docker images'
     }
-
+        }
+    }
     post {
 
         success {
@@ -88,5 +88,5 @@ pipeline {
         }
 
     }
-}
+
 }
