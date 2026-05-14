@@ -69,6 +69,7 @@ pipeline {
         sh 'docker images'
     }
 }
+    }
 post{
         success {
 
