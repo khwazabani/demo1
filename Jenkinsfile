@@ -69,7 +69,7 @@ pipeline {
         sh 'docker images'
     }
 }
-
+post{
         success {
 
             echo 'Artifact uploaded successfully to JFrog'
