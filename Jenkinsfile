@@ -1,11 +1,6 @@
 pipeline {
 
-    agent {
-        docker {
-            image 'maven:3.9.6-eclipse-temurin-17'
-        }
-    }
-
+    agent any
     stages {
 
         stage('Clone Code') {
@@ -18,6 +13,15 @@ pipeline {
         }
 
         stage('Build Application') {
+             agent {
+
+        docker {
+
+            image 'maven:3.9.6-eclipse-temurin-17'
+            args '-v /root/.m2:/root/.m2'
+        }
+    }
+
 
             steps {
 
